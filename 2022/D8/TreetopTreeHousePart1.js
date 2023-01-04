@@ -1,6 +1,5 @@
 const fs = require("fs");
 const treeRows = {};
-let highestScenicScore = 0;
 
 fs.readFile("treetop_tree_house.txt", "utf-8", (err, data) => {
     if (err) {
@@ -23,17 +22,14 @@ fs.readFile("treetop_tree_house.txt", "utf-8", (err, data) => {
     });
 
     let visibleTreesCount = 0;
-    for(const [key, value] of Object.entries(treeRows)) {
-        for(let i = 0; i < value.length; i++) {
-            if(i == 0 || i == 98 || key == 0 || key == 98) {
+    for(const [row, trees] of Object.entries(treeRows)) {
+        for(let treeIndex = 0; treeIndex < trees.length; treeIndex++) {
+            if(treeIndex == 0 || treeIndex == 98 || row == 0 || row == 98) {
                 visibleTreesCount++;
                 continue;
             }
 
-            if(allAboveAreShorter(i, key, value[i]) 
-            || allBeneathAreShorter(i, key, value[i]) 
-            || allToTheLefOrRightAreShorter(i, key, value[i])
-            ) {
+            if(treeIsVisible(treeIndex, row, trees[treeIndex])) {
                 visibleTreesCount++;
             }
         }
@@ -41,6 +37,12 @@ fs.readFile("treetop_tree_house.txt", "utf-8", (err, data) => {
 
     console.log(visibleTreesCount);
 });
+
+function treeIsVisible(treeIndex, row, theTree) {
+    return allAboveAreShorter(treeIndex, row, theTree) 
+        || allBeneathAreShorter(treeIndex, row, theTree) 
+        || allToTheLefOrRightAreShorter(treeIndex, row, theTree);
+}
 
 function allAboveAreShorter(treeIndex, row, theTree) {
     const allTreesAbove = [];
