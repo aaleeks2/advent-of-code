@@ -38,7 +38,6 @@ callbackFn2 = (accumulator, line) => {
   const digitsReversed = lineReversed.match(/[0-9]|eno|owt|eerht|ruof|evif|xis|neves|thgie|enin/g);
 
   if(digits.length == 0) {
-    console.log('The number: ' + 0);
     return accumulator + 0;
   }
 
@@ -49,7 +48,6 @@ callbackFn2 = (accumulator, line) => {
 
   let num = digits.length + digitsReversed.length;
   if(num < 3) {
-    console.log('The number: ' + Number([first, first].join("")));
     return accumulator + Number([first, first].join(""));
   }
 
