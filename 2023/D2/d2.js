@@ -44,8 +44,7 @@ callbackFn2 = (accumulator, line) => {
     let gMax = -1;
     let bMax = -1;
 
-    const gameSplit = line.split(": ");
-    const cubesSplit = gameSplit[1].split(" ");
+    const cubesSplit = line.split(": ")[1].split(" ");
    
     for(let i = 1; i < cubesSplit.length; i = i + 2) {
         let val = Number(cubesSplit[i-1]);
