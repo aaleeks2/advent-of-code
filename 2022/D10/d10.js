@@ -1,5 +1,5 @@
 const fs = require('fs');
-const IS_TEST = true;
+const IS_TEST = false;
 const INPUT = 'input.txt';
 const INPUT_TEST = 'test_input.txt';
 const ENCODING_UTF_8 = 'utf-8';
@@ -16,23 +16,17 @@ fs.readFile(IS_TEST ? INPUT_TEST : INPUT, ENCODING_UTF_8, (err, data) => {
       return;
     }
    
-    console.log(`X: ${data.split(NEW_LINE).reduce(callback, 1)}`);
+    data.split(NEW_LINE).reduce(callback, 1);
     console.log(`Sum: ${sum}`);
 });
 
+// Part 1
 callback = (accumulator, line) => {
-    console.log(`X [${accumulator}]`);
     const splittedLine = line.trim().split(SPACE);
-    // console.log(`Signal: [${splittedLine[0]}:${splittedLine[0] != NOOP ? splittedLine[1] : 0}]`);
-    // console.log(`Cycles: ${cycles}`);
     for(let i = 0; i < (splittedLine[0] == NOOP ? 1 : 2); ++i) {
         cycles++;
-        // console.log(`Cycles incrementation to ${cycles}`);
-        if(THRESHOLDS.includes(cycles) && splittedLine[0] != NOOP) {
-            console.log(`Threshold reached:  ${cycles}`);
+        if(THRESHOLDS.includes(cycles)) {
             sum += accumulator * cycles;
-            console.log(`Factor added:  ${accumulator * cycles} ([X:${accumulator}]*[T:${cycles}])`);
-            console.log(`New sum: ${sum}`);
         }
     }
     return accumulator + (splittedLine[0] != NOOP ? parseInt(splittedLine[1]) : 0);
