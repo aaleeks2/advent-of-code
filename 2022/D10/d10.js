@@ -17,8 +17,8 @@ fs.readFile(IS_TEST ? INPUT_TEST : INPUT, ENCODING_UTF_8, (err, data) => {
       return;
     }
    
-    data.split(NEW_LINE).reduce(callback, 1);
-    console.log(`Sum: ${sum}`);
+    // data.split(NEW_LINE).reduce(callback, 1);
+    // console.log(`Sum: ${sum}`);
     render(data);
 });
 
@@ -78,7 +78,7 @@ render = (data) => {
         console.log(`After cycle ${cycles - 1} added ${!isNoop ? parseInt(splittedLine[1]) : 0}\n`);
         accumulator += (!isNoop ? parseInt(splittedLine[1]) : 0);
     }
-    
+
     console.log('###########\tTHE RESULT\t###########\n');
     console.log(result.join('\n'));
 };
