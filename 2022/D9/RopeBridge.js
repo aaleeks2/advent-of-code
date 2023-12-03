@@ -1,19 +1,26 @@
-const { dir } = require("console");
 const fs = require("fs");
 const positions = new Set();
 
-const X_SURFACE = ["L", "R"];
+const X_SURFACE = ['L', 'R'];
 const RIGHT = 'R';
 const UP = 'U';
+const ID_HEAD = 'HEAD';
+const ID_TAIL = 'TAIL';
+const INITIAL_POSITION = '[0:0]';
 
-
-// Part 1
-fs.readFile("rope_bridge.txt", "utf-8", (err, data) => {
+fs.readFile('rope_bridge.txt', 'utf-8', (err, data) => {
     if (err) {
       console.error(err);
       return;
     }
 
+    run2(data);
+    console.log(positions.size);
+});
+
+// Part 1
+function run(data) {
+    positions.add(INITIAL_POSITION);
     let head = {
         x: 0,
         y: 0
@@ -24,8 +31,7 @@ fs.readFile("rope_bridge.txt", "utf-8", (err, data) => {
         y: 0
     };
 
-    const splittedLines = data.split("\n");
-    positions.add('[0-0]')
+    const splittedLines = data.split('\n');
     splittedLines.forEach((line) => {
         const splittedLine = line.split(" ");
         const direction = splittedLine[0];
@@ -39,34 +45,29 @@ fs.readFile("rope_bridge.txt", "utf-8", (err, data) => {
             fixTailPosition(head, tail);
         }
     });
-
-    console.log(positions.size);
-});
+}
 
 function fixTailPosition(head, tail) {
     if(tailIsInDifferentRow(head, tail)) {
-        const x_diff = head.x - tail.x;
-        const y_diff = head.y - tail.y;
+        const xDiff = head.x - tail.x;
+        const yDiff = head.y - tail.y;
+        const shouldFixXaxis = Math.abs(xDiff) == 1;
 
-        if(Math.abs(x_diff) == 1) {
-            changePosition(
-                tail, 
-                tail.x + x_diff,
-                tail.y + (head.y > tail.y ? 1 : -1)
-            );
-        } else if(Math.abs(y_diff) == 1) {
-            changePosition(
-                tail,
-                tail.x + (head.x > tail.x ? 1 : -1),
-                tail.y + y_diff
-            );
-        }
+        changePosition(
+            tail, 
+            shouldFixXaxis
+                ? tail.x + xDiff 
+                : tail.x + (head.x > tail.x ? 1 : -1),
+            shouldFixXaxis
+                ? tail.y + (head.y > tail.y ? 1 : -1) 
+                : tail.y + yDiff
+        );
     }
 
     const axis = head.x != tail.x ? 'x' : 'y';
     const distance = axis === 'x' ? head.x - tail.x : head.y - tail.y;
     const shouldGoForward = distance > 0;
-    
+
     for(let i = 0; i < Math.abs(distance) - 1; ++i) {
         if(axis === 'x') {
             changePosition(tail, tail.x + (shouldGoForward ? 1 : -1), tail.y);
@@ -74,6 +75,85 @@ function fixTailPosition(head, tail) {
             changePosition(tail, tail.x, tail.y + (shouldGoForward ? 1 : -1));
         }
     }
+}
+
+// Part 2
+function run2(data) {
+    positions.add(INITIAL_POSITION);
+    let rope = [
+        {id:1, x: 0, y: 0},
+        {id:2, x: 0, y: 0},
+        {id:3, x: 0, y: 0},
+        {id:4, x: 0, y: 0},
+        {id:5, x: 0, y: 0},
+        {id:6, x: 0, y: 0},
+        {id:7, x: 0, y: 0},
+        {id:8, x: 0, y: 0},
+        {id:ID_TAIL, x: 0, y: 0}
+    ];
+
+    let head = {
+        id: ID_HEAD,
+        x: 0,
+        y: 0
+    };
+
+    const splittedLines = data.split('\n');
+    splittedLines.forEach((line) => {
+        const splittedLine = line.split(' ');
+        const direction = splittedLine[0];
+        const distance = parseInt(splittedLine[1]);
+        console.log(`Direction: ${direction}\tDistance: ${distance}`);
+        for(let i = 0; i < distance; ++i) {
+            const newCoordinate = X_SURFACE.includes(direction)
+                ? { 
+                    id: ID_HEAD,
+                    x: head.x + (direction === RIGHT ? 1 : -1), 
+                    y: head.y
+                }
+                : { 
+                    id: ID_HEAD,
+                    x: head.x, 
+                    y: head.y + (direction === UP ? 1 : - 1)
+                };
+            head = newCoordinate;
+            console.log(`New HEAD position: [${head.x}:${head.y}]`);
+            for(let j = 0; j < rope.length; ++j) {
+                fixTailPosition2(j == 0 ? head : rope[j-1], rope[j]);
+            }
+        }
+    });
+}
+
+function fixTailPosition2(head, tail) {
+    if(tailIsAdjecentToHead(head, tail)) {
+        console.log(`Head-node ID: ${head.id} [${head.x}:${head.y}] is adjecent to tail-node ID: ${tail.id} [${tail.x}:${tail.y}]`);
+        return;
+    }
+
+    const xDiff = head.x - tail.x;
+    const yDiff = head.y - tail.y;
+    if(tailIsInDifferentRow(head, tail)) {
+        console.log(`Tail-node ID: ${tail.id} [${tail.x}:${tail.y}] is diagonaly moving to head-node ID: ${head.id} [${head.x}:${head.y}]`);
+        const shouldFixXaxis = Math.abs(xDiff) == 1;
+        changePosition2(
+            tail, 
+            shouldFixXaxis
+                ? tail.x + (xDiff > 0 ? 1 : -1)
+                : tail.x + (head.x > tail.x ? 1 : -1),
+            shouldFixXaxis
+                ? tail.y + (head.y > tail.y ? 1 : -1) 
+                : tail.y + (yDiff > 0 ? 1 : -1)
+        );
+    } else {
+        console.log(`Tail-node ID: ${tail.id} [${tail.x}:${tail.y}] is moving in line to head-node ID: ${head.id} [${head.x}:${head.y}]`);
+        changePosition2(
+            tail, 
+            tail.x + (xDiff == 0 ? 0: (xDiff > 0 ? 1 : -1)), 
+            tail.y + (yDiff == 0 ? 0 :(yDiff > 0 ? 1 : -1))
+        );
+    }
+    console.log(`Tail-node ID: ${tail.id} position fixed to [${tail.x}:${tail.y}]`);
 }
 
 function tailIsInDifferentRow(head, tail) {
@@ -87,7 +167,14 @@ function tailIsAdjecentToHead(head, tail) {
 function changePosition(node, x, y) {
     node.x = x;
     node.y = y;
-    positions.add(`[${String(node.x)}-${String(node.y)}]`);
+    positions.add(`[${node.x}:${node.y}]`);
 }
 
-// Part 2
+function changePosition2(node, x, y) {
+    node.x = x;
+    node.y = y;
+    if(node.id == ID_TAIL) {
+        positions.add(`[${node.x}:${node.y}]`);
+        console.log(`TAIL positions: ${[...positions]}`);
+    }
+}
