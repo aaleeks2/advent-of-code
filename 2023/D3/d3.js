@@ -22,17 +22,29 @@ run = (data) => {
     let sum = 0;
     const dataMatrix = data.split(NEW_LINE).map(x => x.trim());
     dataMatrix.forEach((line, index) => {
-        while ((match = NUMBER_REGEX.exec(line)) !== null) {
-            let prevLine = index == 0 ? EMPTY_STRING : dataMatrix[index - 1];
-            let nextLine = index == dataMatrix.length - 1 ? EMPTY_STRING : dataMatrix[index + 1];
+        let prevLine = index == 0 ? EMPTY_STRING : dataMatrix[index - 1];
+        let nextLine = index == dataMatrix.length - 1 ? EMPTY_STRING : dataMatrix[index + 1];
 
-            const startIndex = match.index - 1 < 0 ? 0 : match.index - 1;
-            const lastIndex = NUMBER_REGEX.lastIndex + 1 == line.length ? line.length -1 : NUMBER_REGEX.lastIndex + 1;
+        while ((match = NUMBER_REGEX.exec(line)) !== null) {
+            const startIndex = match.index < 1 
+                ? match.index 
+                : match.index - 1;
+                
+            const lastIndex = NUMBER_REGEX.lastIndex == line.length - 1 
+                ? NUMBER_REGEX.lastIndex 
+                : NUMBER_REGEX.lastIndex + 1;
 
             console.log(`Found ${match[0]} start=${match.index} end=${NUMBER_REGEX.lastIndex}.`);
-            const prevLineSlice = prevLine !== EMPTY_STRING ? prevLine.slice(startIndex, lastIndex) : prevLine;
+
+            const prevLineSlice = prevLine !== EMPTY_STRING 
+                ? prevLine.slice(startIndex, lastIndex) 
+                : prevLine;
+
             const lineSlice = line.slice(startIndex, lastIndex);
-            const nextLineSlice = nextLine !== EMPTY_STRING ? nextLine.slice(startIndex, lastIndex) : nextLine;
+
+            const nextLineSlice = nextLine !== EMPTY_STRING 
+                ? nextLine.slice(startIndex, lastIndex) 
+                : nextLine;
             
             if(
                 prevLineSlice.match(SYMBOL_REGEX)
@@ -55,7 +67,7 @@ run2 = (data) => {
         while ((match = GEAR_REGEX.exec(line)) !== null) {
             let adjecentNumbers = [];
             const startIndex = match.index == 0 ? 0 : match.index - 1;
-            const lastIndex = NUMBER_REGEX.lastIndex == line.length -1 ? line.length -1 : GEAR_REGEX.lastIndex;
+            const lastIndex = GEAR_REGEX.lastIndex == line.length -1 ? line.length -1 : GEAR_REGEX.lastIndex;
             
             console.log(`[${index}] Match index: ${match.index} -- Start index: ${startIndex}\tLast index: ${lastIndex}`);
             if(index != 0) {
@@ -83,9 +95,7 @@ function findAdjecentNumbers(line, sIndex, eIndex, numbers) {
         const numberStartIndex = match.index - 1 < 0 ? 0 : match.index;
         const numberLastIndex = NUMBER_REGEX.lastIndex + 1 == line.length ? line.length -1 : NUMBER_REGEX.lastIndex -1;
 
-        if(
-            (numberLastIndex >= sIndex && numberStartIndex <= eIndex)
-        ) {
+        if(numberLastIndex >= sIndex && numberStartIndex <= eIndex) {
             numbers.push(parseInt(match));
         }
     }
