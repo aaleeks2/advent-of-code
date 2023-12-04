@@ -35,7 +35,7 @@ countWinning = (line) => {
         .split(COLON_SPACE)[1]
         .split(WHITESPACE_REGEX)
         .filter(x => x !== EMPTY_STR);
-    const res = pickedNumbers.filter((x) => winningNumbers.includes(x));
+    const res = winningNumbers.filter((x) => pickedNumbers.includes(x));
     return res.length;
 }
 // Part 2
