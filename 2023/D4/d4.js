@@ -7,9 +7,7 @@ const PIPE_SYMBOL = ' | ';
 const SPACE = ' ';
 const EMPTY_STR = '';
 const COLON_SPACE = ': ';
-const COLON = ':';
 const NUMBER_REGEX = /[0-9]+/g;
-const WHITESPACE_REGEX = /\s+/g;
 
 fs.readFile(IS_TEST ? TEST_INPUT : INPUT, "utf-8", (err, data) => {
     if (err) {
@@ -26,18 +24,20 @@ part1 = (accumulator, line) => {
     return accumulator + (winning > 0 ? 2**(winning - 1) : 0);
 }
 
-countWinning = (line) => {
+function countWinning(line) {
     const splittedLine = line.split(PIPE_SYMBOL);
-    // console.log(`The line: ${line}`);
-    const pickedNumbers = splittedLine[1].split(WHITESPACE_REGEX);
-    // console.log(`Elve's numbers type: ${[...pickedNumbers]}`);
-    const winningNumbers = splittedLine[0].split(COLON_SPACE)[1].split(WHITESPACE_REGEX);
-    // console.log(`Winning numbers type: ${[...winningNumbers]}`);
-    // console.log(`Matching: ${pickedNumbers.filter((x) => winningNumbers.includes(x))}`);
-    return pickedNumbers.filter((x) => winningNumbers.includes(x)).length;
+    const pickedNumbers = splittedLine[1]
+        .split(SPACE)
+        .filter(x => x !== EMPTY_STR);
+    const winningNumbers = splittedLine[0]
+        .split(COLON_SPACE)[1]
+        .split(SPACE)
+        .filter(x => x !== EMPTY_STR);
+    
+    const res = pickedNumbers.filter((x) => winningNumbers.includes(x));
+    return res.length;
 }
-
-// Part 2 -- to be optimized and fixed
+// Part 2
 part2 = (data) => {
     const result = [];
     data.split(NEW_LINE).forEach(line => processGame(line, result));
@@ -46,8 +46,10 @@ part2 = (data) => {
 
 processGame = (line, resultArray) => {
     const game = parseInt(getNumberGame(line));
+    resultArray.push(game);
+
     const winning = countWinning(line);
-    const copies = resultArray.filter(x => x === game).length;
+    const copies = resultArray.filter(x => x === game).length-1;
     for(let i = 1; i <= winning; ++i) {
         let temp = copies;
         do {
@@ -56,7 +58,6 @@ processGame = (line, resultArray) => {
         } while(temp >= 0)
         temp = copies;
     }
-    resultArray.push(game);
 }
 
-getNumberGame = (line) => line.split(WHITESPACE_REGEX)[1].replace(COLON, EMPTY_STR);
+getNumberGame = (line) => line.split(PIPE_SYMBOL)[0].split(COLON_SPACE)[0].match(NUMBER_REGEX);
