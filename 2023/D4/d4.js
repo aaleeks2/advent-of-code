@@ -8,6 +8,7 @@ const SPACE = ' ';
 const EMPTY_STR = '';
 const COLON_SPACE = ': ';
 const NUMBER_REGEX = /[0-9]+/g;
+const WHITESPACE_REGEX = /\s+|\n/g;
 
 fs.readFile(IS_TEST ? TEST_INPUT : INPUT, "utf-8", (err, data) => {
     if (err) {
@@ -24,16 +25,16 @@ part1 = (accumulator, line) => {
     return accumulator + (winning > 0 ? 2**(winning - 1) : 0);
 }
 
-function countWinning(line) {
+countWinning = (line) => {
     const splittedLine = line.split(PIPE_SYMBOL);
     const pickedNumbers = splittedLine[1]
-        .split(SPACE)
+        .split(WHITESPACE_REGEX)
         .filter(x => x !== EMPTY_STR);
+
     const winningNumbers = splittedLine[0]
         .split(COLON_SPACE)[1]
-        .split(SPACE)
+        .split(WHITESPACE_REGEX)
         .filter(x => x !== EMPTY_STR);
-    
     const res = pickedNumbers.filter((x) => winningNumbers.includes(x));
     return res.length;
 }
@@ -60,4 +61,4 @@ processGame = (line, resultArray) => {
     }
 }
 
-getNumberGame = (line) => line.split(PIPE_SYMBOL)[0].split(COLON_SPACE)[0].match(NUMBER_REGEX);
+getNumberGame = (line) => line.split(COLON_SPACE)[0].match(NUMBER_REGEX);
