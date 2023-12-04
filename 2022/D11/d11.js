@@ -11,7 +11,7 @@ fs.readFile(IS_TEST ? TEST_INPUT : INPUT, "utf-8", (err, data) => {
   part1(data);
 });
 
-part1 = (data) => {
+part1 = (data) => { // replace \n with |, replace whitespaces with '', split by |
     
 };
 
